@@ -1,5 +1,4 @@
 from app import db
-from datetime import datetime
 import uuid
 from random import randint, choice
 import string
@@ -10,7 +9,7 @@ class Tip(db.Model):
             primary_key=True)
     employee_id = db.Column('employee_id', db.String(length=64),
             db.ForeignKey('employees.id'), nullable=False)
-    tip_date = db.Column('tip_date', db.DateTime(), nullable=False)
+    tip_date = db.Column('tip_date', db.Date(), nullable=False)
     amount = db.Column('amount', db.Integer, nullable=False)
     tip_out_amount = db.Column('tip_out_amount', db.Integer, nullable=False)
 
