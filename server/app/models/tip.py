@@ -10,10 +10,13 @@ class Tip(db.Model):
     employee_id = db.Column('employee_id', db.String(length=64),
             db.ForeignKey('employees.id'), nullable=False)
     tip_date = db.Column('tip_date', db.Date(), nullable=False)
-    amount = db.Column('amount', db.Integer, nullable=False)
-    tip_out_amount = db.Column('tip_out_amount', db.Integer, nullable=False)
+    amount = db.Column('amount', db.Float)
+    tip_out_amount = db.Column('tip_out_amount', db.Float)
 
     def __init__(self, employee_id, tip_date, amount, tip_out_amount):
+        if ((amount == None and tip_out_amount == None)
+                or (amount != None and tip_out_amount != None)):
+                raise ValueError('Either a tip or tip out must be speficied')
         self.id = str(uuid.uuid4())
         self.employee_id = employee_id
         self.tip_date = tip_date

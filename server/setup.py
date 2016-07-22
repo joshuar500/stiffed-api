@@ -38,6 +38,12 @@ else:
     db.session.commit()
 
     # Add tips for dummy employee
-    get_employee = Employee.query.filter(name='Employee').one()
+    get_employee = Employee.query.filter_by(name='Employee').one()
     employee_id = get_employee.id
-    
+    tip1 = Tip(employee_id=employee_id, tip_date=dateutil.parser.parse('2016-01-10'), amount=12.40, tip_out_amount=None)
+    db.session.add(tip1)
+    db.session.commit()
+
+    print "Finished populating database!"
+
+    exit()
