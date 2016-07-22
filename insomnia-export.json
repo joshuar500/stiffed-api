@@ -1,0 +1,35 @@
+{
+  "_type": "export",
+  "__export_format": 1,
+  "__export_date": "2016-07-22T04:56:37.899Z",
+  "__export_source": "insomnia.chrome.app:v2.6.10",
+  "items": [
+    {
+      "_type": "request_group",
+      "_id": "grp_1437333314976",
+      "name": "stiffed-api",
+      "environments": {},
+      "requests": [
+        {
+          "_type": "request",
+          "_id": "req_1437333314976",
+          "url": "http://localhost:5050/v1/tips/1bf908ff-3efe-440e-8773-9dea38ed1661/weekly",
+          "method": "GET",
+          "body": "",
+          "headers": [],
+          "params": [],
+          "authentication": {
+            "_type": "basic",
+            "username": "",
+            "password": ""
+          },
+          "__insomnia": {
+            "format": "json",
+            "panel_width": 0.5
+          },
+          "name": "Weekly Tips"
+        }
+      ]
+    }
+  ]
+}
