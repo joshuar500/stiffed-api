@@ -3,6 +3,7 @@ from app.models.user import User, Admin, Employee
 from app.models.tip import Tip
 from sqlalchemy.exc import IntegrityError
 import dateutil.parser
+from datetime import datetime, timedelta
 import os
 
 # Delete all tables if database exists
@@ -102,6 +103,18 @@ else:
     # Add more tips (day 7/7 + 3)
     tip13 = Tip(employee_id=employee_id, tip_date=dateutil.parser.parse('2016-03-16'), amount=100.99, tip_out_amount=None)
     db.session.add(tip13)
+    db.session.commit()
+
+    # Add more tips
+    today = datetime.now().date()
+    tip14 = Tip(employee_id=employee_id, tip_date=dateutil.parser.parse(str(today)), amount=100.99, tip_out_amount=None)
+    db.session.add(tip14)
+    db.session.commit()
+
+    # Add more tips
+    dates_ago = today - timedelta(days=4)
+    tip15 = Tip(employee_id=employee_id, tip_date=dateutil.parser.parse(str(dates_ago)), amount=100.99, tip_out_amount=None)
+    db.session.add(tip15)
     db.session.commit()
 
     print '============================='
