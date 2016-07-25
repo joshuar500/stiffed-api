@@ -46,9 +46,44 @@ def v1_logout(current_user):
 ###
 ### Tips
 ###
-@app.route('/v1/tips/<uid>/weekly', methods=['GET'])
+@app.route('/v1/<uid>/tips/weekly', methods=['GET'])
 @auth_user()
-def v1_weekly_tips(uid):
+def v1_weekly_tips(current_user, uid):
     today = datetime.now().date()
     seven_days_ago = today - timedelta(days=7)
     return v1.tips.amount_by_dates(uid, str(today), str(seven_days_ago))
+
+@app.route('/v1/<uid>/tips/add', methods=['POST'])
+@auth_user()
+def v1_add_tips(current_user, uid):
+    required_params = ['amount', 'tip_date']
+    params = request.get_json()
+    if not valid_request_json(params, required_params):
+        return error_messages.json_400()
+    tip_amount = params['amount']
+    date = params['tip_date']
+    return v1.tips.add_tips(uid, tip_amount, date)
+
+@app.route('/v1/<uid>/tips/update', methods=['POST'])
+@auth_user()
+def v1_update_tips(current_user, uid):
+    today = datetime.now().date()
+    seven_days_ago = today - timedelta(days=7)
+    return v1.tips.update_tips(uid, str(today), str(seven_days_ago))
+
+@app.route('/v1/<uid>/tips/delete', methods=['POST'])
+@auth_user()
+def v1_delete_tips(current_user, uid):
+    today = datetime.now().date()
+    seven_days_ago = today - timedelta(days=7)
+    return v1.tips.delete_tips(uid, str(today), str(seven_days_ago))
+
+###
+### Tip Outs
+###
+@app.route('/v1/<uid>/tip_outs/weekly', methods=['GET'])
+@auth_user()
+def v1_weekly_tip_outs(current_user, uid):
+    today = datetime.now().date()
+    seven_days_ago = today - timedelta(days=7)
+    return v1.tips.tip_outs_by_dates(uid, str(today), str(seven_days_ago))
