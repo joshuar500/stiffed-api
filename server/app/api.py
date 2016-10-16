@@ -1,7 +1,7 @@
 from app import app
 from flask import request
 from flask_cors import CORS
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from auth import auth_user
 from validators import valid_request_json
 import error_messages
@@ -46,12 +46,26 @@ def v1_logout(current_user):
 ###
 ### Tips
 ###
-@app.route('/v1/<uid>/tips/weekly', methods=['GET'])
+@app.route('/v1/<uid>/tips/all', methods=['GET'])
 @auth_user()
-def v1_weekly_tips(current_user, uid):
-    today = datetime.now().date()
-    seven_days_ago = today - timedelta(days=7)
-    return v1.tips.amount_by_dates(uid, str(today), str(seven_days_ago))
+def v1_all_tips(current_user, uid):
+    return v1.tips.get_all_tips(uid)
+
+@app.route('/v1/<uid>/tips/summary', methods=['GET'])
+@auth_user()
+def v1_summary(current_user, uid):
+    return v1.tips.get_summary(uid)
+
+@app.route('/v1/<uid>/tips/bydate', methods=['POST'])
+@auth_user()
+def v1_tips_by_date(current_user, uid):
+    required_params = ['start_date', 'end_date']
+    params = request.get_json()
+    if not valid_request_json(params, required_params):
+        return error_messages.json_400()
+    start_date = params['start_date']
+    end_date = params['end_date']
+    return v1.tips.amount_by_dates(uid, start_date, end_date)
 
 @app.route('/v1/<uid>/tips/add', methods=['POST'])
 @auth_user()
@@ -87,3 +101,21 @@ def v1_weekly_tip_outs(current_user, uid):
     today = datetime.now().date()
     seven_days_ago = today - timedelta(days=7)
     return v1.tips.tip_outs_by_dates(uid, str(today), str(seven_days_ago))
+
+###
+### Income
+###
+@app.route('/v1/<uid>/income/weekly', methods=['GET'])
+@auth_user()
+def v1_weekly_income(current_user, uid):
+    today = datetime.now().date()
+    seven_days_ago = today - timedelta(days=7)
+    return v1.income.amount_by_dates(uid, str(today), str(seven_days_ago))
+
+###
+### Feed
+###
+@app.route('/v1/<uid>/feed', methods=['GET'])
+@auth_user()
+def v1_feed(current_user, uid):
+    return v1.users.get_feed(current_user, uid)

@@ -4,6 +4,7 @@ from app.models.tip import Tip
 from app.validators import valid_email, valid_password
 from flask import Response, json
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy import desc
 from datetime import datetime, timedelta
 import app.error_messages as error_messages
 
@@ -63,3 +64,14 @@ def logout(current_user):
         return error_messages.json_499(e.message)
 
     return Response(contents, 204, mimetype='application/json')
+
+def get_feed(current_user, uid):
+    try:
+        found_tips = Tip.query.filter(Tip.employee_id==uid).order_by(desc(Tip.tip_date))
+        tips = [tip.json_dict() for tip in found_tips]
+        contents = json.dumps({'tips': tips})
+    except Exception as e:
+        print e.message
+        return error_messages.json_499(e.message)
+
+    return Response(contents, 200, mimetype='application/json')
