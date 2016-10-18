@@ -59,43 +59,30 @@ def get_summary(uid):
         last_month_last_day = first - timedelta(days=1)
         last_month_first_day = last_month_last_day.replace(day=1)
         last_month_tips = amount_by_dates(uid, str(last_month_last_day), str(last_month_first_day))
-        print last_month_first_day
-        print last_month_last_day
-        print '---------'
+
         # current month - 1
         two_month_last_day = last_month_first_day - timedelta(days=1)
         two_month_first_day = two_month_last_day.replace(day=1)
         two_month_tips = amount_by_dates(uid, str(two_month_last_day), str(two_month_first_day))
-        print two_month_first_day
-        print two_month_last_day
-        print '---------'
+
         # current month - 2
         three_month_last_day = two_month_first_day - timedelta(days=1)
         three_month_first_day = three_month_last_day.replace(day=1)
         three_month_tips = amount_by_dates(uid, str(three_month_last_day), str(three_month_first_day))
-        print three_month_first_day
-        print three_month_last_day
-        print '---------'
+
         # current month - 3
         four_month_last_day = three_month_first_day - timedelta(days=1)
         four_month_first_day = four_month_last_day.replace(day=1)
         four_month_tips = amount_by_dates(uid, str(four_month_last_day), str(four_month_first_day))
-        print four_month_first_day
-        print four_month_last_day
-        print '---------'
+
         # current month - 4
         five_month_last_day = four_month_first_day - timedelta(days=1)
         five_month_first_day = five_month_last_day.replace(day=1)
         five_month_tips = amount_by_dates(uid, str(five_month_last_day), str(five_month_first_day))
-        print five_month_first_day
-        print five_month_last_day
-        print '---------'
         # current month - 5
         six_month_last_day = five_month_first_day - timedelta(days=1)
         six_month_first_day = six_month_last_day.replace(day=1)
         six_month_tips = amount_by_dates(uid, str(six_month_last_day), str(six_month_first_day))
-        print six_month_first_day
-        print six_month_last_day
 
         # create json            
         contents = {}
@@ -108,7 +95,6 @@ def get_summary(uid):
         contents['five_month'] = [tip.json_dict() for tip in five_month_tips]
         contents['six_month'] = [tip.json_dict() for tip in six_month_tips]
         contents = json.dumps(contents)
-        print contents
     except Exception as e:
         print e.message
     
@@ -162,16 +148,18 @@ def delete_tips(uid, tip_amount, date):
 ###
 ### Tip Out logic
 ###
-def tip_outs_by_dates(uid, start_date, end_date):
+def tip_out(uid, tip_amount, date):
     try:
-        found_tip_outs = Tip.query.filter(Tip.employee_id==uid, Tip.tip_date<=start_date, Tip.tip_date>=end_date).order_by(desc(Tip.tip_date)).all()
-        if found_tip_outs is None:
-            reason = 'There are no tip outs with this users ID'
-            print reason
-        tip_outs = [tip_out.json_dict() for tip_out in found_tip_outs]
-        contents = json.dumps({'tip_outs': tip_outs})
+        date = dateutil.parser.parse(date)
+        tip_out = Tip(employee_id=uid, amount=None, tip_date=date, tip_out_amount=tip_amount)
+        db.session.add(tip_out)
+        db.session.commit()
+        contents = json.dumps(tip_out.json_dict())
         print contents
     except Exception as e:
-        print e.message
+        print 'tip_out ', e.message
+        reason = 'Could not tip out'
+        db.session.rollback()
+        return error_messages.json_403(reason)
     
     return Response(contents, 200, mimetype='application/json')

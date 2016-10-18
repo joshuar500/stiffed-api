@@ -75,3 +75,17 @@ def get_feed(current_user, uid):
         return error_messages.json_499(e.message)
 
     return Response(contents, 200, mimetype='application/json')
+
+def get_earnings(current_user, uid, start_date, end_date):
+    try:
+        found_tips = tips.amount_by_dates(start_date, end_date)
+        found_income = income.amount_by_dates(start_date, end_date)            
+        contents = {}
+        contents['tips'] = [tip.json_dict() for tip in found_tips]
+        contents['income'] = [income.json_dict() for income in found_income]
+        contents = json.dumps(contents)
+    except Exception as e:
+        print e.message
+        return error_messages.json_499(e.message)
+
+    return Response(contents, 200, mimetype='application/json')

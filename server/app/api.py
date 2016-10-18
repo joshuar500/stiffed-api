@@ -95,12 +95,16 @@ def v1_delete_tips(current_user, uid):
 ###
 ### Tip Outs
 ###
-@app.route('/v1/<uid>/tip_outs/weekly', methods=['GET'])
+@app.route('/v1/<uid>/tips/out', methods=['POST'])
 @auth_user()
-def v1_weekly_tip_outs(current_user, uid):
-    today = datetime.now().date()
-    seven_days_ago = today - timedelta(days=7)
-    return v1.tips.tip_outs_by_dates(uid, str(today), str(seven_days_ago))
+def v1_tip_out(current_user, uid):
+    required_params = ['amount', 'tip_date']
+    params = request.get_json()
+    if not valid_request_json(params, required_params):
+        return error_messages.json_400()
+    tip_out = params['amount']
+    date = params['tip_date']
+    return v1.tips.tip_out(uid, tip_out, date)
 
 ###
 ### Income
@@ -119,3 +123,11 @@ def v1_weekly_income(current_user, uid):
 @auth_user()
 def v1_feed(current_user, uid):
     return v1.users.get_feed(current_user, uid)
+
+###
+### Earnings
+###
+@app.route('/v1/<uid>/earnings', methods=['GET'])
+@auth_user()
+def v1_earnings(current_user, uid, start_date, end_date):
+    return v1.users.get_earnings(current_user, uid)
